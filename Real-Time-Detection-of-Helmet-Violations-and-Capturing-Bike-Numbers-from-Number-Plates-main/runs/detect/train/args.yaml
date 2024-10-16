@@ -1,17 +1,17 @@
 task: detect
 mode: train
-model: /Users/chiragnsundar/Documents/Real-Time-Detection-of-Helmet-Violations-and-Capturing-Bike-Numbers-from-Number-Plates-main/yolo-weights/yolov8l.pt
-data: coco128.yaml
-epochs: 20
+model: C:\Users\amith\OneDrive\Desktop\Final Project\Real-Time-Detection-of-Helmet-Violations-and-Capturing-Bike-Numbers-from-Number-Plates\yolov8l.pt
+data: C:\Users\amith\OneDrive\Desktop\Final Project\Real-Time-Detection-of-Helmet-Violations-and-Capturing-Bike-Numbers-from-Number-Plates\coco128.yaml
+epochs: 40
 time: null
 patience: 100
-batch: 4
-imgsz: 320
+batch: 16
+imgsz: 640
 save: true
 save_period: -1
 cache: false
 device: null
-workers: 0
+workers: 8
 project: null
 name: train
 exist_ok: false
@@ -66,7 +66,7 @@ keras: false
 optimize: false
 int8: false
 dynamic: false
-simplify: false
+simplify: true
 opset: null
 workspace: 4
 nms: false
@@ -98,9 +98,10 @@ bgr: 0.0
 mosaic: 1.0
 mixup: 0.0
 copy_paste: 0.0
+copy_paste_mode: flip
 auto_augment: randaugment
 erasing: 0.4
 crop_fraction: 1.0
 cfg: null
 tracker: botsort.yaml
-save_dir: runs/detect/train
+save_dir: C:\Users\amith\runs\detect\train

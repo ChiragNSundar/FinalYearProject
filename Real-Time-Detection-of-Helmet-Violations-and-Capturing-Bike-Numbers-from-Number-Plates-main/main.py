@@ -1,16 +1,20 @@
 from ultralytics import YOLO
 import math
 import cv2
+import os
 import cvzone
 import torch
 from image_to_text import predict_number_plate
 from transformers import VisionEncoderDecoderModel
 from transformers import TrOCRProcessor
 from paddleocr import PaddleOCR
+import csv
+from datetime import datetime
+import re
 
 cap = cv2.VideoCapture("/Users/chiragnsundar/Documents/Real-Time-Detection-of-Helmet-Violations-and-Capturing-Bike-Numbers-from-Number-Plates-main/videos/22.mp4")  # For videos
 
-model = YOLO("/Users/chiragnsundar/Documents/Real-Time-Detection-of-Helmet-Violations-and-Capturing-Bike-Numbers-from-Number-Plates-main/runs/detect/train/weights/best.pt") # after training update the location of best.pt
+model = YOLO("/Users/chiragnsundar/Documents/Real-Time-Detection-of-Helmet-Violations-and-Capturing-Bike-Numbers-from-Number-Plates-main/runs/detect/train7/weights/best.pt") # after training update the location of best.pt
 
 device = torch.device("cpu") # change to cuda for windows gpu or keep it as cpu
 
@@ -29,6 +33,43 @@ output = cv2.VideoWriter('output.mp4', fourcc, fps, (frame_width, frame_height))
 
 
 ocr = PaddleOCR(use_angle_cls=True, lang='en')  # need to run only once to download and load model into memory
+
+
+def is_valid_indian_number_plate(number_plate):
+    # Regular expression pattern for Indian number plate format
+    pattern = r'^[A-Z]{2}\d{2}[A-Z]{2}\d{4}$'
+    return re.match(pattern, number_plate) is not None
+
+def extract_and_store_number_plate(vehicle_number, conf, without_helmet_detected, csv_file_path='number_plates.csv'):
+    # Check if the number plate is valid, in Indian format, and a person without helmet is detected
+    if vehicle_number and conf and without_helmet_detected and is_valid_indian_number_plate(vehicle_number):
+        # Read existing entries to check for duplicates
+        existing_entries = set()
+        try:
+            with open(csv_file_path, 'r') as file:
+                reader = csv.reader(file)
+                next(reader)  # Skip header
+                existing_entries = set(row[0] for row in reader)
+        except FileNotFoundError:
+            pass  # File doesn't exist yet, which is fine
+
+        # If the vehicle number is not a duplicate, add it to the CSV
+        if vehicle_number not in existing_entries:
+            with open(csv_file_path, 'a', newline='') as file:
+                writer = csv.writer(file)
+                if file.tell() == 0:  # File is empty, write header
+                    writer.writerow(['Vehicle Number', 'Confidence', 'Timestamp', 'Helmet Violation'])
+                writer.writerow([vehicle_number, round(conf*100, 2),
+                                 datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                                 "Yes"])  # Always "Yes" since we only record when without_helmet_detected is True
+            print(f"New entry added: {vehicle_number}")
+            return True
+        else:
+            print(f"Duplicate entry not added: {vehicle_number}")
+    else:
+        if not is_valid_indian_number_plate(vehicle_number):
+            print(f"Invalid Indian number plate format: {vehicle_number}")
+    return False
 
 while True:
     success, img = cap.read()
@@ -96,6 +137,15 @@ while True:
                                                                    (x1, y1 - 50), scale=1.5, offset=10,
                                                                    thickness=2, colorT=(39, 40, 41),
                                                                    colorR=(105, 255, 255))
+                                                # Check if anyone is detected without a helmet
+                                                without_helmet_detected = any(
+                                                    'without helmet' in rider_classes for rider_classes in li.values())
+
+                                                # Extract and store the number plate information
+                                                if extract_and_store_number_plate(vechicle_number, conf,
+                                                                                  without_helmet_detected):
+                                                    print(f"Number plate {vechicle_number} stored in CSV.")
+
                                         except Exception as e:
                                             print(e)
         # Display the frame
