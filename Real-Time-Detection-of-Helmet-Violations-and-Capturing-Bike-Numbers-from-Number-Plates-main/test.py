@@ -24,30 +24,49 @@ def is_valid_indian_number_plate(number_plate):
     return re.match(pattern, number_plate) is not None
 
 
-def extract_and_store_number_plate(vehicle_number, conf, without_helmet_detected, csv_file_path='number_plates.csv'):
+def extract_and_store_number_plate(vehicle_number, conf, without_helmet_detected,
+                                   csv_file_path='/Users/chiragnsundar/Documents/GitHub/FinalYearProject/Real-Time-Detection-of-Helmet-Violations-and-Capturing-Bike-Numbers-from-Number-Plates-main/number_plates.csv'):
     """Extracts and stores valid number plate details."""
+    print(
+        f"Debug: Received values - Vehicle Number: {vehicle_number}, Confidence: {conf}, Without Helmet: {without_helmet_detected}")
+
     if vehicle_number and conf and without_helmet_detected and is_valid_indian_number_plate(vehicle_number):
+        print(f"Debug: Passed validation checks for {vehicle_number}")
         existing_entries = set()
+
         try:
+            # Safely read the CSV file
             with open(csv_file_path, 'r') as file:
                 reader = csv.reader(file)
-                next(reader, None)  # Skip header
-                existing_entries = {row[0] for row in reader}
+                header = next(reader, None)  # Skip the header row if present
+                if header is not None:
+                    print(f"Debug: CSV Header - {header}")
+                    existing_entries = {row[0] for row in reader if row}  # Only non-empty rows
+                print(f"Debug: Existing entries in CSV: {existing_entries}")
         except FileNotFoundError:
-            pass
+            print(f"Debug: CSV file not found. A new file will be created.")
+        except Exception as e:
+            print(f"Debug: Error reading CSV file - {e}")
 
+        # Write the number plate information if not duplicate
         if vehicle_number not in existing_entries:
-            with open(csv_file_path, 'a', newline='') as file:
-                writer = csv.writer(file)
-                if file.tell() == 0:  # Add header if file is empty
-                    writer.writerow(['Vehicle Number', 'Confidence', 'Timestamp', 'Helmet Violation'])
-                writer.writerow([vehicle_number, round(conf * 100, 2),
-                                 datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                                 "Yes"])
-            print(f"New entry added: {vehicle_number}")
-            return True
+            try:
+                with open(csv_file_path, 'a', newline='') as file:
+                    writer = csv.writer(file)
+                    if file.tell() == 0:  # Add header if file is empty
+                        writer.writerow(['Vehicle Number', 'Confidence', 'Timestamp', 'Helmet Violation'])
+                    writer.writerow([vehicle_number, round(conf * 100, 2),
+                                     datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                                     "Yes"])
+                print(f"New entry added: {vehicle_number}")
+                return True
+            except Exception as e:
+                print(f"Debug: Error writing to CSV file - {e}")
         else:
-            print(f"Duplicate entry not added: {vehicle_number}")
+            print(f"Debug: Duplicate entry not added: {vehicle_number}")
+    else:
+        print(
+            f"Debug: Failed validation - Vehicle Number: {vehicle_number}, Confidence: {conf}, Without Helmet: {without_helmet_detected}")
     return False
 
 
