@@ -57,12 +57,12 @@ def predict_number_plate(img, ocr):
 
 def send_violation_email(vehicle_number, violation_image):
     """Send email notification for helmet violation."""
-    sender_email = "amithsagarl2003@gmail.com"
-    sender_password = "upqalkzsqymfzllp"  # Use App Password for Gmail
+    sender_email = "sender-email"
+    sender_password = ""  # Use App Password for Gmail
     
     msg = MIMEMultipart()
     msg['From'] = sender_email
-    msg['To'] = "1rn21cs019.amithsagarl@gmail.com"
+    msg['To'] = "receiver-email"
     msg['Subject'] = "Helmet Violation Detected"
     
     body = f"""
