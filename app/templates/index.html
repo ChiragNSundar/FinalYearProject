@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Helmet Violation Detection System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto max-w-xl bg-white shadow-md rounded-lg p-6 mt-10">
+        <h1 class="text-2xl font-bold text-center mb-6">Helmet Violation Detection System</h1>
+        
+        <div class="mb-6">
+            <h2 class="text-xl font-semibold mb-4">Upload Video</h2>
+            <form id="videoUploadForm" enctype="multipart/form-data">
+                <input type="file" id="videoFile" accept="video/*" class="mb-4">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Upload Video</button>
+            </form>
+            <div id="uploadStatus" class="mt-4 text-center"></div>
+        </div>
+
+        <div class="border-t pt-6 mt-6">
+            <h2 class="text-xl font-semibold mb-4">Check Violations by Vehicle Number</h2>
+            <form id="violationCheckForm">
+                <input type="text" id="vehicleNumber" placeholder="Enter Vehicle Number" 
+                       class="w-full px-3 py-2 border rounded mb-4" required>
+                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Get Violations</button>
+            </form>
+            <div id="violationResults" class="mt-4 grid gap-4"></div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('videoUploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const fileInput = document.getElementById('videoFile');
+            const uploadStatus = document.getElementById('uploadStatus');
+            
+            if (!fileInput.files.length) {
+                uploadStatus.innerHTML = '<p class="text-red-500">Please select a video file</p>';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                uploadStatus.innerHTML = '<p class="text-blue-500">Uploading and processing video...</p>';
+                const response = await fetch('/upload-video/', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    uploadStatus.innerHTML = '<p class="text-green-500">Video processed successfully!</p>';
+                } else {
+                    const errorData = await response.json();
+                    uploadStatus.innerHTML = `<p class="text-red-500">Error: ${errorData.detail}</p>`;
+                }
+            } catch (error) {
+                uploadStatus.innerHTML = `<p class="text-red-500">Error: ${error.message}</p>`;
+            }
+        });
+
+        document.getElementById('violationCheckForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const vehicleNumber = document.getElementById('vehicleNumber').value;
+            const violationResults = document.getElementById('violationResults');
+
+            try {
+                const response = await fetch('/get-violations/', {
+                    method: 'POST',
+                    body: new URLSearchParams({vehicle_number: vehicleNumber})
+                });
+
+                if (response.ok) {
+                    const violations = await response.json();
+                    
+                    if (violations.length === 0) {
+                        violationResults.innerHTML = '<p class="text-blue-500">No violations found for this vehicle.</p>';
+                    } else {
+                        violationResults.innerHTML = violations.map(violation => `
+                            <div class="bg-white shadow-md rounded-lg p-4">
+                                <h3 class="font-bold text-lg mb-2">Violation Details</h3>
+                                <p><strong>Vehicle Number:</strong> ${violation.vehicle_number}</p>
+                                <p><strong>Violation Type:</strong> ${violation.violation_type}</p>
+                                <p><strong>Timestamp:</strong> ${violation.timestamp}</p>
+                                <img src="/${violation.violation_image}" alt="Violation Image" 
+                                     class="mt-4 max-w-full h-auto rounded-lg">
+                            </div>
+                        `).join('');
+                    }
+                } else {
+                    const errorData = await response.json();
+                    violationResults.innerHTML = `<p class="text-red-500">Error: ${errorData.detail}</p>`;
+                }
+            } catch (error) {
+                violationResults.innerHTML = `<p class="text-red-500">Error: ${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>

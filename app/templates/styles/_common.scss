@@ -1,0 +1,230 @@
+/* Define Gloable css */
+* {
+    @include prefix(box-sizing, border-box, moz webkit o ms);
+   }
+   
+   html {
+     height: 100%;
+     overflow-x:hidden;
+   }
+   body {
+     font-family: $popins;
+     font-weight: $regular;
+     @include displayflex;
+     flex-direction: column;
+     background-color: $bgwhite;
+     height: 100%;
+   }
+   
+   /* Common css */
+   a {
+     text-decoration: none;
+     outline: 0;
+   }
+   .text-uppercase {
+     text-transform: uppercase;
+   }
+   .text-capitalize {
+     text-transform: capitalize;
+   }
+   h1 {
+     @include font(40px, 52px, $medium, $black);
+     &.big {
+       @include font(50px, 55px, $medium, $white);
+     }
+     &.bigger {
+       @include font(90px, 100px, $medium, $black);
+     }
+     .light {
+       font-weight: $light;
+     }
+   }
+   h2 {
+     @include font(30px, 37px, $medium, $black);
+   }
+   h3 {
+     @include font(25px, 32px, $light, $darkgray);
+   }
+   h4 {
+     @include font(20px, 27px, $light, $white);
+   }
+   h5 {
+     @include font(13px, 18.2px, $medium, $black);
+   }
+   h6 {
+     @include font(12px, 14.4px, $medium, $darkgray);
+   }
+   
+   p {
+     @include font(16px, 24px, $light, $darkgray);
+   }
+   
+   /* Common Buttons */
+   .button {
+     @include displayinlineflex;
+     @include flexwrap;
+     @include font(16px, 19.2px, $medium, $black);
+     
+     span {
+       @include displayinlineflex;
+       position: relative;
+       
+       @include prefix(transition, (padding-left 0.3s ease-in-out), moz webkit o ms);
+       &::after {
+         content: "";
+         position: absolute;
+         width: 0;
+         height: 2px;
+         left: 0;
+         bottom: -4px;
+         background: $themecolor;
+         @include prefix(transition, (width 0.3s ease-in-out), moz webkit o ms);
+       }
+     }
+     i {
+       @include displayinlineflex;
+       font-size: 16px;
+       line-height: 19.2px;
+       padding-left: 12.5px;
+      
+        @include prefix(transition, (padding-left 0.3s ease-in-out), moz webkit o ms);
+     }
+   
+     &:hover {
+       span {
+         padding-left: 10px;
+         &::after {
+           width: 100%;
+         }
+       }
+       i {
+         padding-left: 18.5px;
+       }
+     }
+     &.button-02{
+       padding:15px 25px;
+       background-color:$themecolor;
+       border:none;
+       @include prefix(border-radius,3px, moz webkit o ms);
+       color:$white;
+       position:relative;
+       overflow:hidden;
+       &::before{
+            content: "";
+       position: absolute;
+       z-index: 1;
+       top: 0;
+       bottom: 0;
+       left: 0;
+       right: 0;
+       background: $black;
+       
+       @include prefix(transform-origin, (50%), moz webkit o ms);
+       @include prefix(transform, (scaleX(1)), moz webkit o ms); 
+       @include prefix(transition, (transform 0.3s ease-out 0s), moz webkit o ms);
+         
+         }
+       span{
+         z-index:2;
+         &::after {
+         display:none;
+       }
+       }
+       i {
+         z-index:2;
+       }
+       &:hover{
+         span, i{
+           color:$black;
+         }
+            &::before {
+           @include prefix(transform, (scaleX(0)), moz webkit o ms);
+       }
+       }
+     }
+   }
+   /* Listing */
+   ul{
+     &.list{
+       list-style:none;
+       @extend .flexbox;
+       flex-direction: column;
+       
+       li{
+         @include flex(0 0 100%);
+         max-width:100%;
+         
+       }
+       &.inline{
+         flex-direction: row;
+         li{
+           @include flex(0 0 auto);
+           max-width:100%;
+         }
+       }
+       &.list-01{
+       
+       h6{
+         color:$themecolor;
+         margin-bottom:40px;
+       }
+       li{
+         @include font(16px, 32px, $light, $white);
+         a{
+           color:$white;
+         }
+         &:hover{
+           a{
+             color:$themecolor;
+           }
+         }
+       }
+       &.inline{
+         li{
+           &:not(:last-child){
+             padding-right:32px;
+           }
+         
+         }
+       }
+     
+     }
+      &.list-02{
+       h5{
+         @extend .flexbox;
+         
+         color:$black;
+         margin-bottom:14px;
+       }
+       li{
+         @include font(16px, 32px, $light, $label);
+         a{
+           color:$white;
+         }
+         &:hover{
+           a{
+             color:$themecolor;
+           }
+         }
+       }
+       &.inline{
+         li{
+           &:not(:last-child){
+             padding-right:33px;
+           }
+         
+         }
+       }
+     
+     }
+     }
+     
+   }
+   
+   /* grid */
+   .flex-row {
+     @extend .flexbox;
+     margin-left: -15px;
+     margin-right: -15px;
+   }
+   

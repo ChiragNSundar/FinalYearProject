@@ -1,0 +1,61 @@
+/* For common Vendor Prefix */
+@mixin prefix($property, $value, $vendorPrefix) {
+    @each $prefix in $vendorPrefix {
+      -#{$prefix}-#{$property}: $value;
+    }
+    #{$property}: $value;
+  }
+  /* Display Flex */
+  @mixin displayflex {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+  }
+  /* Display Inlne Flex */
+  @mixin displayinlineflex {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: inline-flex;
+  }
+  
+  /* Display Flex Wrap */
+  @mixin flexwrap {
+    -ms-flex-wrap: wrap;
+    -webkit-flex-wrap: wrap;
+    flex-wrap: wrap;
+  }
+  
+  /* Display Flex(grow,shrink,basis) */
+  @mixin flex($flexvalue) {
+    -webkit-box: $flexvalue;
+    -moz-box: $flexvalue;
+    -webkit-flex: $flexvalue;
+    -ms-flex: $flexvalue;
+    flex: $flexvalue;
+  }
+  
+  /* Display Flex Order */
+  @mixin order($order) {
+    -webkit-box-ordinal-group: $order;
+    -moz-box-ordinal-group: $order;
+    -webkit-order: $order;
+    -ms-flex-order: $order;
+    order: $order;
+  }
+  
+  /* Font Setting(size,lineheight,fontweight,color) */
+  @mixin font($fontsize,$lineheight,$fontweight,$color){
+    font-size:$fontsize;
+    line-height:$lineheight;
+    font-weight:$fontweight;
+    color:$color;
+    
+  }
+  
+  
+  
+  
