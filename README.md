@@ -1,4 +1,4 @@
-# 🏍️ Helmet Violation Detection & License Plate Recognition  
+# 🏍️ Helmet Violation Detection & License Plate Recognition Realtime
 
 This project is an **AI-powered helmet violation detection system** that uses **YOLOv8** for real-time object detection and **PaddleOCR** for license plate recognition, automatically logging violations, storing images, and sending email alerts for enforcement. It integrates **FastAPI** for a web interface, processes uploaded videos, and maintains a violation database for tracking offenders efficiently. 
 
